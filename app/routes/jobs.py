@@ -34,6 +34,6 @@ def create_job()
    data = load_data()  ## all data came in this and later chk spcfc
 
    if job_id in data:
-      return data[job_id]
+      return 'already exist'
  
    raise HTTPException(status_code=404,detail='Incorrect way ')

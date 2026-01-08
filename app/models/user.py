@@ -10,4 +10,4 @@ class UserCreate(BaseModel):
 
 
 class User(UserCreate):
-    id: int
+    user_id: int

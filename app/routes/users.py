@@ -25,13 +25,13 @@ def view_user(user_id: str)
  
    raise HTTPException(status_code=404,detail='The entered usert not found')
 
-@router.post("/create_user",response_model=UserCreate)  ##on browser fromat to get
+@router.post("/create_user",response_model="UserCreate")  ##on browser fromat to get
 def create_user():
    
    data = load_data()  ## all data came in this and later chk spcfc
 
-   if user_id in data:
+   if user_id not in data:
+        data["user_id"]= data["user_id"].append()
       
-      return data[user_id]
- 
+    raise "Already existed"
  
