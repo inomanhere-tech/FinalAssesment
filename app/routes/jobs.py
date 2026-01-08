@@ -1,8 +1,8 @@
 from fastapi import APIRouter,HTTPException
 from fastapi import BaseModel
-router = APIRouter()
+import json
 
-from fastapi import APIRouter
+router = APIRouter()
 
 
 ## loading the job data 
