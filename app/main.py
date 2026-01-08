@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.routes import health, jobs, users
-
+import uvicorn
 app = FastAPI(title="Job Recommendation API")
 
 app.include_router(health.router)
