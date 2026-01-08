@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-
+from fastapi import APIRouter,HTTPException
+from fastapi import BaseModel
 router = APIRouter()
 
 from fastapi import APIRouter
@@ -19,7 +19,17 @@ def view():
 
 # showing the job by id 
 @router.get("/jobs/{job_id}")  ##on browser fromat to get
-def view_user(job_id: str)
+def view_job(job_id: str)
+   
+   data = load_data()  ## all data came in this and later chk spcfc
+
+   if job_id in data:
+      return data[job_id]
+ 
+   raise HTTPException(status_code=404,detail='Incorrect way ')
+
+@router.post("/create_jobs",response_class= JobCreate)  ##on browser fromat to get
+def create_job()
    
    data = load_data()  ## all data came in this and later chk spcfc
 
