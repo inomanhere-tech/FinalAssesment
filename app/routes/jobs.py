@@ -17,7 +17,7 @@ def view():
    data = load_data()
    return data
 
-# showing the user by id 
+# showing the job by id 
 @router.get("/jobs/{job_id}")  ##on browser fromat to get
 def view_user(job_id: str)
    
