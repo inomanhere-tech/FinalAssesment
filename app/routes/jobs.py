@@ -1,39 +1,28 @@
-from fastapi import APIRouter,HTTPException
-from fastapi import BaseModel
-import json
+from fastapi import APIRouter, HTTPException
+from typing import List
+from models.job import Job, JobCreate
+from store.memory import jobs_seed  # Use in-memory seed
 
 router = APIRouter()
 
 
-## loading the job data 
-def load_data():
-   with open('memory.json','r') as f:
-        data = json.load(f)
-        return data
+@router.get("/", response_model=list[Job])
+def get_jobs():
+    return jobs_seed
 
-# showing all the users 
-@router.get("/jobs")
-def view():
-   data = load_data()
-   return data
 
-# showing the job by id 
-@router.get("/jobs/{job_id}")  ##on browser fromat to get
-def view_job(job_id: str)
-   
-   data = load_data()  ## all data came in this and later chk spcfc
+@router.get("/{job_id}", response_model=Job)
+def get_job(job_id: int):
+    for job in jobs_seed:
+        if job["id"] == job_id:
+            return job
+    raise HTTPException(status_code=404, detail="Job not found")
 
-   if job_id in data:
-      return data[job_id]
- 
-   raise HTTPException(status_code=404,detail='Incorrect way ')
 
-@router.post("/create_jobs",response_class= JobCreate)  ##on browser fromat to get
-def create_job()
-   
-   data = load_data()  ## all data came in this and later chk spcfc
-
-   if job_id in data:
-      return 'already exist'
- 
-   raise HTTPException(status_code=404,detail='Incorrect way ')
+@router.post("/", response_model=Job)
+def create_job(job: JobCreate):
+    new_id = max(job["id"] for job in jobs_seed) + 1
+    new_job = job.dict()
+    new_job["id"] = new_id
+    jobs_seed.append(new_job)
+    return new_job

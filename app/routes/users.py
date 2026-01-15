@@ -1,37 +1,44 @@
-from fastapi import APIRouter,HTTPException
-import json
+from fastapi import APIRouter, HTTPException
+from typing import List
+from models.user import User, UserCreate
+from store.memory import users_seed
+from services.recommendation_service import get_recommendations  # We'll use this for recommendations
+
 router = APIRouter()
 
-## loading the suers data 
-def load_data():
-   with open('memory.json','r') as f:
-        data = json.load(f)
-        return data
 
-# showing all the users 
-@router.get("/users")
-def view():
-   data = load_data()
-   return data
+@router.get("/", response_model=list[User])
+def get_users():
+    return users_seed
 
-# showing the user by id 
-@router.get("/users/{user_id}")  ##on browser fromat to get
-def view_user(user_id: str)
-   
-   data = load_data()  ## all data came in this and later chk spcfc
 
-   if user_id in data:
-      return data[user_id]
- 
-   raise HTTPException(status_code=404,detail='The entered usert not found')
+@router.get("/{user_id}", response_model=User)
+def get_user(user_id: int):
+    for user in users_seed:
+        if user["id"] == user_id:
+            return user
+    raise HTTPException(status_code=404, detail="User not found")
 
-@router.post("/create_user",response_model="UserCreate")  ##on browser fromat to get
-def create_user():
-   
-   data = load_data()  ## all data came in this and later chk spcfc
 
-   if user_id not in data:
-        data["user_id"]= data["user_id"].append()
-      
-    raise "Already existed"
- 
+@router.post("/", response_model=User)
+def create_user(user: UserCreate):
+    new_id = max(user["id"] for user in users_seed) + 1
+    new_user = user.dict()
+    new_user["id"] = new_id
+    users_seed.append(new_user)
+    return new_user
+
+
+# Recommendation endpoint
+@router.get("/{user_id}/recommendations")
+def recommendations(user_id: int):
+    user = None
+    for u in users_seed:
+        if u["id"] == user_id:
+            user = u
+            break
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    recommended_jobs = get_recommendations(user)
+    return {"user_id": user_id, "recommended_jobs": recommended_jobs}
